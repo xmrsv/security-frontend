@@ -1,16 +1,69 @@
 ---
-
+import Layout from "../layouts/Layout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<style>
+	input {
+		padding: 0.6rem;
+		border-radius: 0.5rem;
+		border: 0.05rem solid gray;
+	}
+
+	form {
+		max-width: 30ch;
+		margin: auto;
+		display: flex;
+		flex-direction: column;
+	}
+
+	label,
+	input,
+	button {
+		font: inherit;
+	}
+
+	form label {
+		margin-block-end: 0.75rem;
+	}
+
+	form input {
+		margin-block-end: 1.5rem;
+	}
+
+	form button {
+		outline: none;
+		border: none;
+		padding: 0.8rem;
+		border-radius: 0.5rem;
+		border: 0.05rem solid hsl(0, 0%, 80%);
+		border-bottom: 0.3rem solid darkgray;
+		transition: transform 100ms ease, border-bottom 100ms ease;
+		font-size: 0.9rem;
+		font-weight: 900;
+		color: hsl(0, 0%, 40%)
+	}
+
+	form button:active {
+		border-bottom: 0.15rem solid darkgray;
+		transform: translateY(0.15rem);
+	}
+</style>
+
+<Layout
+	title="Iniciar sesión"
+	description="Inicia sesión con tu usuario y contraseña"
+>
+	<form id="form">
+		<label for="username">Usuario</label>
+		<input type="text" name="username" id="username" />
+		<label for="password">Contraseña</label>
+		<input type="password" name="password" id="password" />
+		<button id="button">Iniciar sesión</button>
+	</form>
+</Layout>
+
+<script>
+	const button = document.getElementById("button");
+
+	button.addEventListener("click", (e) => e.preventDefault());
+</script>

@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "debug": "astro dev --verbose",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -11,5 +12,8 @@
   },
   "dependencies": {
     "astro": "^4.11.0"
+  },
+  "devDependencies": {
+    "sass": "^1.77.6"
   }
 }

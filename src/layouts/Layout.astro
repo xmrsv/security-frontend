@@ -1,4 +1,8 @@
 ---
+// src/layouts/Layout.astro
+
+import Fonts from "../components/Fonts.astro";
+import Header from "../components/Header.astro";
 import "../styles/styles.css";
 
 interface Props {
@@ -17,16 +21,14 @@ const { title, description } = Astro.props;
 		<meta name="description" content={description} />
 
 		<!-- Fonts -->
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
-			rel="stylesheet"
-		/>
+		<Fonts />
 
 		<title>{title}</title>
 	</head>
 	<body>
-		<slot />
+		<Header></Header>
+		<main>
+			<slot />
+		</main>
 	</body>
 </html>

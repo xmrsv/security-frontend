@@ -1,0 +1,100 @@
+---
+// src/components/Header.astro
+
+---
+
+<style lang="scss">
+	header {
+		position: absolute;
+		top: 0;
+		width: 100%;
+		nav {
+			height: 60px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding-inline: 2rem;
+			background-color: rgb(42, 42, 42);
+			color: hsl(0, 0%, 95%);
+
+			.logo {
+				font-weight: 600;
+			}
+
+			ul {
+				list-style: none;
+				margin: 0;
+				display: flex;
+
+				gap: 1rem;
+			}
+		}
+	}
+
+	a {
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.logout-button {
+		cursor: pointer;
+	}
+</style>
+
+<header>
+	<nav>
+		<a class="logo" href="/">Academia</a>
+		<ul>
+			<li>
+				<a href="#">Inicio</a>
+			</li>
+			<li>
+				<a href="/alumnos">Alumnos</a>
+			</li>
+			<li>
+				<a href="/auth/login">Iniciar sesión</a>
+			</li>
+			<li>
+				<a href="/auth/register">Registrarte</a>
+			</li>
+			<li>
+				<span class="logout-button" id="logout-button">Cerrar sesión</span>
+			</li>
+		</ul>
+	</nav>
+</header>
+
+<script>
+	const logoutButton = document.getElementById("logout-button");
+
+	logoutButton.addEventListener("click", () => {
+		localStorage.removeItem("token");
+	});
+
+	const token = localStorage.getItem("token");
+	try {
+		const username = decodeToken(token);
+		console.log("Nombre de usuario:", username);
+	} catch (error) {
+		console.error("Error al decodificar el token:", error);
+	}
+
+	function decodeToken(token) {
+		if (!token) {
+			throw new Error("No se proporcionó ningún token.");
+		}
+
+		const parts = token.split(".");
+		if (parts.length !== 3) {
+			throw new Error("Token inválido");
+		}
+
+		const payload = JSON.parse(atob(parts[1]));
+
+		if (!payload.sub) {
+			throw new Error('El token no contiene un "sub" (subject).');
+		}
+
+		return payload.sub;
+	}
+</script>

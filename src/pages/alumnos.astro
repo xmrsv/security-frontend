@@ -1,0 +1,75 @@
+---
+// src/pages/alumnos.astro
+
+import Layout from "../layouts/Layout.astro";
+---
+
+<style>
+
+	.container {
+		padding: 2rem;
+	}
+
+</style>
+
+<Layout title="Lista de alumnos" description="Lista de alumnos">
+	<div class="container" id="userContent">
+		<h1>Alumnos</h1>
+		<button id="loadUsersButton">Cargar alumnos</button>
+		<ul id="userList"></ul>
+	</div>
+
+	<script>
+		import AuthManager from "../scripts/AuthManager.js";
+
+		const userContent = document.getElementById("userContent");
+		const userList = document.getElementById("userList");
+		const loadUsersButton = document.getElementById("loadUsersButton");
+		const authManager = new AuthManager();
+
+		async function loadUsers() {
+			userList.innerHTML = "<li>Cargando usuarios...</li>";
+
+			try {
+				const token = authManager.getTokenFromLocalStorage();
+
+				if (!token) {
+					throw new Error(
+						"No se encontró ningún token. Inicia sesión para continuar."
+					);
+				}
+
+				const users = await authManager.getUsersWithToken(token);
+				userList.innerHTML = "";
+
+				if (users.length === 0) {
+					userList.innerHTML = "<li>No hay usuarios disponibles.</li>";
+					return;
+				}
+
+				users.forEach((user) => {
+					const listItem = document.createElement("li");
+					listItem.textContent = `${user.nombres}`;
+					userList.appendChild(listItem);
+				});
+			} catch (error) {
+				console.error("Error al cargar usuarios:", error);
+				userList.innerHTML = `<li>Error al cargar usuarios: ${error.message}</li>`;
+			}
+		}
+
+		function checkAuthentication() {
+			if (authManager.checkAuthentication()) {
+				// El usuario está autenticado, muestra el contenido
+			} else {
+				// El usuario no está autenticado, redirige o muestra un mensaje
+				userContent.innerHTML =
+					"<p>Necesitas autenticarte para acceder a esta página.</p>";
+			}
+		}
+
+		loadUsersButton.addEventListener("click", loadUsers);
+
+		checkAuthentication();
+	</script>
+</Layout>

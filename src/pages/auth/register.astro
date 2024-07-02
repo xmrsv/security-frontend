@@ -1,0 +1,158 @@
+---
+// src/pages/auth/register.astro
+
+import Layout from "../../layouts/Layout.astro";
+---
+
+<style lang="scss">
+	.container {
+		display: grid;
+		background-color: #797979;
+		height: 100%;
+		grid-template-columns: 3fr 2fr;
+
+		.image-container {
+			background-image: url("/loginbg.jpg");
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
+		}
+
+		.form-container {
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+			justify-content: center;
+			background-color: hsl(0, 0%, 100%);
+
+			form {
+				width: 100%;
+				max-width: 50ch;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				padding: 4rem;
+
+				h1 {
+					color: hsl(0, 0%, 30%);
+					width: 100%;
+					margin: 0;
+					font-weight: 600;
+					letter-spacing: -0.05rem;
+					margin-block-end: 2rem;
+				}
+
+				label,
+				input,
+				button {
+					border-radius: 0.5rem;
+				}
+
+				label {
+					color: hsl(0, 0%, 15%);
+					width: 100%;
+					margin-block-end: 0.5rem;
+				}
+
+				input,
+				button {
+					padding: 1rem;
+				}
+
+				input {
+					outline: none;
+					width: 100%;
+					border: 0.1rem solid hsl(0, 0%, 75%);
+					margin-block-end: 1.5rem;
+
+					&:focus-visible {
+						border-color: hsl(0, 0%, 50%);
+					}
+				}
+
+				button {
+					margin-top: 1rem;
+					width: 100%;
+					border: none;
+					background-color: hsl(211, 91%, 39%);
+					color: hsl(0, 0%, 100%);
+					font-family: inherit;
+					font-size: inherit;
+					font-weight: 600;
+					padding: 1rem;
+					border-radius: 2rem;
+				}
+
+				.response {
+					font-family: monospace;
+					margin-top: 2rem;
+					padding: 0.5rem;
+					border-radius: 0.5rem;
+					max-width: 100%;
+					overflow-x: auto;
+					background-color: hsl(0, 0%, 90%);
+					border: 0.1rem solid hsl(0, 0%, 75%);
+					opacity: 1;
+					transition: opacity 200ms ease;
+				}
+			}
+		}
+	}
+</style>
+
+<Layout title="Inicio" description="Autenticate">
+	<div class="container">
+		<div class="image-container"></div>
+		<div class="form-container">
+			<form id="registerForm">
+				<h1>Crear cuenta</h1>
+				<label for="username">Tu usuario</label>
+				<input type="text" name="username" id="username" required />
+				<label for="password">Tu contraseña</label>
+				<input type="password" name="password" id="password" required />
+				<button id="registerButton">Crear cuenta</button>
+				<div class="response" id="response">Everything ok</div>
+			</form>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	import AuthManager from "../../scripts/AuthManager.js";
+
+	const registerButton = document.getElementById("registerButton");
+	const username = document.getElementById("username") as HTMLInputElement;
+	const password = document.getElementById("password") as HTMLInputElement;
+	const serverResponseText = document.getElementById("response");
+	const registerForm = document.getElementById("registerForm");
+	const authManager = new AuthManager();
+
+	registerButton.addEventListener("click", async (event) => {
+		event.preventDefault();
+		serverResponseText.innerHTML = "Enviando petición...";
+		console.log(
+			`Enviando petición de registro (usuario: ${username.value}, contraseña: ${password.value})...`
+		);
+
+		try {
+			const data = await authManager.registerUser(
+				username.value,
+				password.value
+			);
+
+			console.log("Respuesta recibida:", data);
+			serverResponseText.innerHTML = JSON.stringify(data, null, 2);
+		} catch (error) {
+			console.error("Error al registrar el usuario:", error);
+			serverResponseText.innerHTML =
+				"Error al registrarse. Revisa la consola para más detalles.";
+		}
+	});
+
+	// Verificar el token al cargar la página
+	if (authManager.checkExistingToken()) {
+		// Si ya existe un token, redirige o muestra un mensaje
+		registerForm.innerHTML =
+			"<p>Ya has iniciado sesión. No puedes registrar una nueva cuenta.</p>";
+	}
+</script>

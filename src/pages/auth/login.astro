@@ -1,92 +1,160 @@
 ---
+// src/pages/auth/login.astro
+
 import Layout from "../../layouts/Layout.astro";
 ---
 
 <style lang="scss">
-	.error {
-		margin: 2rem;
-		padding: 1rem;
-	}
+	.container {
+		display: grid;
+		height: 100%;
+		grid-template-columns: 3fr 2fr;
 
-	form {
-		max-width: 30ch;
-		margin: 2rem;
-		padding: 1rem;
-		display: flex;
-		flex-direction: column;
-
-		label {
-			margin-block-end: 0.5rem;
+		.image-container {
+			background-image: url("/loginbg.jpg");
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: cover;
 		}
 
-		input {
-			margin-block-end: 1rem;
-			padding: 0.5rem;
-			border-radius: 0.5rem;
-			border: 0.1rem solid hsl(0, 0%, 50%);
-		}
+		.form-container {
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+			justify-content: center;
+			background-color: hsl(0, 0%, 100%);
 
-		button {
-			border-radius: 0.5rem;
-			border: none;
-			background-color: hsl(0, 0%, 0%);
-			color: hsl(0, 0%, 100%);
-			padding: 0.5rem;
-			font: inherit;
-			font-weight: 600;
+			form {
+				width: 100%;
+				max-width: 50ch;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				padding: 4rem;
+
+				h1 {
+					color: hsl(0, 0%, 30%);
+					width: 100%;
+					margin: 0;
+					font-weight: 600;
+					letter-spacing: -0.05rem;
+					margin-block-end: 2rem;
+				}
+
+				label,
+				input,
+				button {
+					border-radius: 0.5rem;
+				}
+
+				label {
+					color: hsl(0, 0%, 15%);
+					width: 100%;
+					margin-block-end: 0.5rem;
+				}
+
+				input,
+				button {
+					padding: 1rem;
+				}
+
+				input {
+					outline: none;
+					width: 100%;
+					border: 0.1rem solid hsl(0, 0%, 75%);
+					margin-block-end: 1.5rem;
+
+					&:focus-visible {
+						border-color: hsl(0, 0%, 50%);
+					}
+				}
+
+				button {
+					margin-top: 1rem;
+					width: 100%;
+					border: none;
+					background-color: hsl(211, 91%, 39%);
+					color: hsl(0, 0%, 100%);
+					font-family: inherit;
+					font-size: inherit;
+					font-weight: 600;
+					padding: 1rem;
+					border-radius: 2rem;
+				}
+
+				.response {
+					font-family: monospace;
+					margin-top: 2rem;
+					padding: 0.5rem;
+					border-radius: 0.5rem;
+					max-width: 100%;
+					overflow-x: auto;
+					background-color: hsl(0, 0%, 90%);
+					border: 0.1rem solid hsl(0, 0%, 75%);
+					opacity: 1;
+					transition: opacity 200ms ease;
+				}
+			}
 		}
 	}
 </style>
 
-<Layout title="Login" description="login">
-	<div class="error">
-		<p>Response: <span id="responseText">none</span></p>
+<Layout title="Inicio" description="Autenticate">
+	<div class="container">
+		<div class="image-container"></div>
+		<div class="form-container">
+			<form id="form">
+				<h1>Iniciar sesión</h1>
+				<label for="username">Tu usuario</label>
+				<input type="text" name="username" id="username" required />
+				<label for="password">Tu contraseña</label>
+				<input type="password" name="password" id="password" required />
+				<button id="button">Ingresar</button>
+				<div class="response" id="response">Everything ok</div>
+			</form>
+		</div>
 	</div>
-
-	<form id="form">
-		<label for="username">Usuario</label>
-		<input type="text" name="username" id="usernameInput" required />
-		<label for="password">Contraseña</label>
-		<input type="password" name="password" id="passwordInput" required />
-		<button id="loginButton">Iniciar sesión</button>
-	</form>
-
-	<script>
-		import { authFromUser, type User } from "../../scripts/InteractionAPI";
-
-        const webHost = window.location.host
-
-		const usernameInput: HTMLInputElement = document.getElementById(
-			"usernameInput"
-		) as HTMLInputElement;
-		const passwordInput: HTMLInputElement = document.getElementById(
-			"passwordInput"
-		) as HTMLInputElement;
-		const loginButton: HTMLButtonElement = document.getElementById(
-			"loginButton"
-		) as HTMLButtonElement;
-		const responseText = document.getElementById("responseText");
-
-		let user: User = {
-			username: "",
-			password: "",
-		};
-
-		loginButton.addEventListener("click", async (event: Event) => {
-			event.preventDefault();
-			user.username = usernameInput.value;
-			user.password = passwordInput.value;
-
-			const response = await authFromUser(user);
-			const data = await response.json();
-
-			if (response.status === 401) {
-				responseText.innerHTML = data.error;
-			} else if (response.status === 200) {
-				responseText.innerHTML = "logged in";
-                Response.redirect(webHost + "/protected")
-            }
-		});
-
-	</script>
 </Layout>
+
+<script>
+	import AuthManager from "../../scripts/AuthManager.js";
+
+	const button = document.getElementById("button");
+	const username = document.getElementById("username") as HTMLInputElement;
+	const password = document.getElementById("password") as HTMLInputElement;
+	const serverResponseText = document.getElementById("response");
+	const form = document.getElementById("form");
+	const authManager = new AuthManager();
+
+	button.addEventListener("click", async (event) => {
+		event.preventDefault();
+		serverResponseText.innerHTML = "Enviando petición...";
+		console.log(
+			`Enviando petición (usuario: ${username.value}, contraseña: ${password.value})...`
+		);
+
+		try {
+			const data = await authManager.getTokenFromUsernamePassword(
+				username.value,
+				password.value
+			);
+
+			console.log("Respuesta recibida:", data);
+			serverResponseText.innerHTML = JSON.stringify(data, null, 2);
+
+			if (data.token) {
+				authManager.saveTokenInLocalStorage(data.token);
+			}
+		} catch (error) {
+			console.error("Error al obtener el token:", error);
+			serverResponseText.innerHTML =
+				"Error al iniciar sesión. Revisa la consola para más detalles.";
+		}
+	});
+
+	// Verificar el token al cargar la página
+	if (authManager.checkExistingToken()) {
+		// Si ya existe un token, redirige o muestra un mensaje
+		form.innerHTML = "<p>Ya has iniciado sesión.</p>";
+	}
+</script>

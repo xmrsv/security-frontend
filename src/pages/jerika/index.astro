@@ -1,0 +1,241 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<style>
+  .sidebar {
+    position: fixed;
+    height: 100%;
+    width: 260px;
+    background: #1b6dc1;
+    padding: 15px;
+    z-index: 99;
+  }
+  .logo {
+    font-size: 25px;
+    padding: 0 15px;
+  }
+  .sidebar a {
+    color: #fff;
+    text-decoration: none;
+  }
+  .menu-content {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin-top: 40px;
+    overflow-y: scroll;
+  }
+  .menu-content::-webkit-scrollbar {
+    display: none;
+  }
+  .menu-items {
+    height: 100%;
+    width: 100%;
+    list-style: none;
+    transition: all 0.4s ease;
+  }
+  .submenu-active .menu-items {
+    transform: translateX(-56%);
+  }
+  .menu-title {
+    color: #fff;
+    font-size: 14px;
+    padding: 15px 20px;
+  }
+  .item a,
+  .submenu-item {
+    padding: 16px;
+    display: inline-block;
+    width: 100%;
+    border-radius: 12px;
+  }
+  .item i {
+    font-size: 12px;
+  }
+  .item a:hover,
+  .submenu-item:hover,
+  .submenu .menu-title:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .submenu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    cursor: pointer;
+  }
+  .submenu {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    right: calc(-100% - 26px);
+    background: #1b6dc1;
+    display: none;
+  }
+  .show-submenu ~ .submenu {
+    display: block;
+  }
+  .submenu .menu-title {
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .submenu .menu-title i {
+    margin-right: 10px;
+  }
+  .navbar,
+  .main {
+    left: 260px;
+    width: calc(100% - 260px);
+    transition: all 0.5s ease;
+    z-index: 1000;
+  }
+  .sidebar.close ~ .navbar,
+  .sidebar.close ~ .main {
+    left: 0;
+    width: 100%;
+  }
+  .navbar {
+    position: fixed;
+    color: #1b6dc1;
+    padding: 15px 20px;
+    font-size: 25px;
+    background: #f1d246;
+    cursor: pointer;
+  }
+  .navbar #sidebar-close {
+    cursor: pointer;
+  }
+  .main {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    z-index: 100;
+    background: #e7f2fd;
+  }
+
+  .main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .main h1 {
+    color: #1b6dc1;
+    font-size: 50px;
+    text-align: center;
+    margin-top: 1rem;
+  }
+</style>
+
+<Layout title="" description="">
+  <nav class="sidebar">
+    <a href="#" class="logo">Menú</a>
+    <div class="menu-content">
+      <ul class="menu-items">
+        <li class="item">
+          <div class="submenu-item">
+            <span>Disciplinas</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+          <ul class="menu-items submenu">
+            <div class="menu-title">
+              <i class="fa-solid fa-chevron-left"></i>
+              Disciplinas
+            </div>
+            <li class="item">
+              <a href="jerika/categoria">Voley</a>
+            </li>
+            <li class="item">
+              <a href="#">Basquet</a>
+            </li>
+            <li class="item">
+              <a href="#">Futbol</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="item">
+          <div class="submenu-item">
+            <span>Actividades</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+          <ul class="menu-items submenu">
+            <div class="menu-title">
+              <i class="fa-solid fa-chevron-left"></i>
+              Your submenu title
+            </div>
+            <li class="item">
+              <a href="#">First sublink</a>
+            </li>
+            <li class="item">
+              <a href="#">First sublink</a>
+            </li>
+            <li class="item">
+              <a href="#">First sublink</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="item">
+          <div class="submenu-item">
+            <span>Reportes</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </div>
+          <ul class="menu-items submenu">
+            <div class="menu-title">
+              <i class="fa-solid fa-chevron-left"></i>
+              Your submenu title
+            </div>
+            <li class="item">
+              <a href="#">First sublink</a>
+            </li>
+            <li class="item">
+              <a href="#">First sublink</a>
+            </li>
+            <li class="item">
+              <a href="#">First sublink</a>
+            </li>
+          </ul>
+        </li>
+
+      </ul>
+    </div>
+  </nav>
+  <nav class="navbar">
+    <i class="fa-solid fa-bars" id="sidebar-close"></i>
+  </nav>
+  <div class="main">
+    <img src="/logo.png" >
+    <h1>Bienvenido Delfin Reyna</h1>
+  </div>
+</Layout>
+<script>
+  const sidebar = document.querySelector(".sidebar");
+  const sidebarClose = document.querySelector("#sidebar-close");
+  const menu = document.querySelector(".menu-content");
+  const menuItems = document.querySelectorAll(".submenu-item");
+  const subMenuTitles = document.querySelectorAll(".submenu .menu-title");
+  sidebarClose.addEventListener("click", () =>
+    sidebar.classList.toggle("close")
+  );
+  menuItems.forEach((item, index) => {
+    item.addEventListener("click", () => {
+      menu.classList.add("submenu-active");
+      item.classList.add("show-submenu");
+      menuItems.forEach((item2, index2) => {
+        if (index !== index2) {
+          item2.classList.remove("show-submenu");
+        }
+      });
+    });
+  });
+  subMenuTitles.forEach((title) => {
+    title.addEventListener("click", () => {
+      menu.classList.remove("submenu-active");
+    });
+  });
+</script>

@@ -3,24 +3,24 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <style lang="scss">
-    form {
-        max-width: 40ch;
-        display: flex;
-        flex-direction: column;
+	form {
+		max-width: 40ch;
+		display: flex;
+		flex-direction: column;
 
-        button {
-					margin-top: 1rem;
-					width: 100%;
-					border: none;
-					background-color: hsl(211, 91%, 39%);
-					color: hsl(0, 0%, 100%);
-					font-family: inherit;
-					font-size: inherit;
-					font-weight: 600;
-					padding: 1rem;
-					border-radius: 2rem;
-				}
-}
+		button {
+			margin-top: 1rem;
+			width: 100%;
+			border: none;
+			background-color: hsl(211, 91%, 39%);
+			color: hsl(0, 0%, 100%);
+			font-family: inherit;
+			font-size: inherit;
+			font-weight: 600;
+			padding: 1rem;
+			border-radius: 2rem;
+		}
+	}
 </style>
 
 <Layout title="Crear Alumno" description="Crear un nuevo alumno">
@@ -29,18 +29,25 @@ import Layout from "../../layouts/Layout.astro";
 		<form class="create-student-form" id="createStudentForm">
 			<label for="createNombres">Nombres:</label>
 			<input type="text" id="createNombres" required />
-			<label for="createDni">DNI:</label>
-			<input type="text" id="createDni" required />
-			<label for="createCorreo">Correo:</label>
-			<input type="email" id="createCorreo" required />
+
 			<label for="createApellidoPaterno">Apellido Paterno:</label>
 			<input type="text" id="createApellidoPaterno" required />
+
 			<label for="createApellidoMaterno">Apellido Materno:</label>
 			<input type="text" id="createApellidoMaterno" required />
+
+			<label for="createDni">DNI:</label>
+			<input type="text" id="createDni" required />
+
+			<label for="createCorreo">Correo:</label>
+			<input type="email" id="createCorreo" required />
+
 			<label for="createFechaNacimiento">Fecha de Nacimiento:</label>
 			<input type="date" id="createFechaNacimiento" required />
+
 			<label for="createTelefono">Teléfono:</label>
 			<input type="text" id="createTelefono" required />
+
 			<button id="createStudentButton">Crear Alumno</button>
 		</form>
 	</div>

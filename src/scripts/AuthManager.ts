@@ -1,7 +1,7 @@
 class AuthManager {
 	API_URL: string;
 
-	constructor(apiUrl = "http://localhost:8053/") {
+	constructor(apiUrl = "http://localhost:8054/") {
 		this.API_URL = apiUrl;
 	}
 

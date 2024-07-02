@@ -1,0 +1,138 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<style>
+  .nav {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .list {
+    width: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .list_item-click {
+    border-radius: 1rem;
+    background-color: #f1d246;
+    list-style: none;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+    cursor: pointer;
+    margin-right: 2rem;
+  }
+
+  .list_button {
+    align-items: center;
+    gap: 1rem;
+    width: 70%;
+    margin: 0 auto;
+  }
+
+  .list_button,
+  a {
+    font-size: 2rem;
+    font-weight: 500;
+    color: #1b6dc1;
+    text-decoration: none;
+    padding: 3rem 0 3rem 0;
+  }
+
+  .nav_link-inside {
+    font-size: 1rem;
+    background-color: #1b6dc1;
+    color: #ffffff;
+    width: 6rem;
+    margin: auto;
+    display: block;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+    text-decoration: none;
+    transition: background-color 200ms ease-in;
+  }
+
+  .nav_link-inside:hover{
+    background-color: #0a4e92;
+  }
+
+</style>
+
+<Layout title="" description="">
+  <nav class="nav">
+    <ul class="list">
+      <li class="list_item-click">
+        <div class="list_button">
+          <a href="#">Sub 8</a>
+        </div>
+        <ul class="list_show">
+          <li class="list_inside">
+            <a href="/jerika/listaAlumnos" class="nav_link-inside">Grupo 1</a>
+          </li>
+          <li class="list_inside">
+            <a href="#" class="nav_link-inside">Grupo 2</a>
+          </li>
+        </ul>
+      </li>
+      <li class="list_item-click">
+        <div class="list_button">
+          <a href="#">Sub 12</a>
+        </div>
+        <ul class="list_show">
+          <li class="list_inside">
+            <a href="#" class="nav_link-inside">Grupo 1</a>
+          </li>
+          <li class="list_inside">
+            <a href="#" class="nav_link-inside">Grupo 2</a>
+          </li>
+        </ul>
+      </li>
+      <li class="list_item-click">
+        <div class="list_button">
+          <a href="#">Sub 12</a>
+        </div>
+        <ul class="list_show">
+          <li class="list_inside">
+            <a href="#" class="nav_link-inside">Grupo 1</a>
+          </li>
+          <li class="list_inside">
+            <a href="#" class="nav_link-inside">Grupo 2</a>
+          </li>
+        </ul>
+      </li>
+      <li class="list_item-click">
+        <div class="list_button">
+          <a href="#">Sub 12</a>
+        </div>
+        <ul class="list_show">
+          <li class="list_inside">
+            <a href="#" class="nav_link-inside">Grupo 1</a>
+          </li>
+          <li class="list_inside">
+            <a href="#" class="nav_link-inside">Grupo 2</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    
+  </nav>
+</Layout>
+<script lang="js">
+  const listItems = document.querySelectorAll(".list_item-click");
+
+  listItems.forEach((listItem) => {
+    listItem.addEventListener("mouseover", () => {
+      listItem.querySelector(".list_show").style.maxHeight = "1000px";
+    });
+
+    listItem.addEventListener("mouseout", () => {
+      listItem.querySelector(".list_show").style.maxHeight = "0";
+    });
+  });
+</script>

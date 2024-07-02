@@ -1,0 +1,237 @@
+---
+// src/pages/alumnos/obtener-todos.astro
+
+import Layout from "../../layouts/Layout.astro";
+---
+
+<style>
+	.load-students-button {
+		padding: 1rem 1.5rem;
+		border-radius: 2rem;
+		border: none;
+		font: inherit;
+		margin-block-end: 1rem;
+		color: hsl(0, 0%, 0%);
+		background-color: hsl(211, 91%, 39%);
+		color: hsl(0, 0%, 100%);
+		font-weight: 600;
+	}
+</style>
+
+<Layout title="Lista de alumnos" description="Lista de alumnos">
+	<div class="main-container" id="userContent">
+		<h1>Alumnos</h1>
+		<button class="load-students-button" id="loadUsersButton"
+			>Cargar alumnos</button
+		>
+		<a href="/alumnos/crear">Crear Alumno</a>
+
+		<div class="overflow-fixer-x">
+			<table class="general-table alumnos-table" id="userList">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Nombres</th>
+						<th>DNI</th>
+						<th>Correo</th>
+						<th>Apellido Paterno</th>
+						<th>Apellido Materno</th>
+						<th>Fecha de Nacimiento</th>
+						<th>Teléfono</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody id="userTableBody">
+					<!-- Los alumnos se cargarán aquí -->
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<script>
+		import AuthManager from "../../scripts/AuthManager.ts";
+		import StudentManager from "../../scripts/StudentManager.ts";
+
+		const userContent = document.getElementById("userContent");
+		const userTableBody = document.getElementById(
+			"userTableBody"
+		) as HTMLTableSectionElement;
+		const loadUsersButton = document.getElementById("loadUsersButton");
+		const authManager = new AuthManager();
+		const studentManager = new StudentManager();
+
+		interface Alumno {
+			id: number;
+			dni: string;
+			nombres: string;
+			apellidoPaterno: string;
+			apellidoMaterno: string;
+			correo: string;
+			fechaNacimiento: string;
+			telefono: string;
+		}
+
+		let nombresInput: HTMLInputElement;
+		let dniInput: HTMLInputElement;
+		let correoInput: HTMLInputElement;
+		let apellidoPaternoInput: HTMLInputElement;
+		let apellidoMaternoInput: HTMLInputElement;
+		let fechaNacimientoInput: HTMLInputElement;
+		let telefonoInput: HTMLInputElement;
+		let editButton: HTMLButtonElement;
+
+		async function loadUsers() {
+			userTableBody.innerHTML = "<tr><td>Cargando usuarios...</td></tr>";
+
+			try {
+				const token = authManager.getTokenFromLocalStorage();
+
+				if (!token) {
+					throw new Error(
+						"No se encontró ningún token. Inicia sesión para continuar."
+					);
+				}
+
+				const users = await studentManager.getStudents(token);
+				userTableBody.innerHTML = "";
+
+				if (users.length === 0) {
+					userTableBody.innerHTML =
+						"<tr><td>No hay alumnos disponibles.</td></tr>";
+					return;
+				}
+
+				for (const user of users) {
+					const row = userTableBody.insertRow();
+
+					// ID
+					const idCell = row.insertCell();
+					idCell.textContent = user.id.toString();
+
+					// Nombres
+					const nombresCell = row.insertCell();
+					nombresInput = document.createElement("input");
+					nombresInput.type = "text";
+					nombresInput.value = user.nombres;
+					nombresCell.appendChild(nombresInput);
+
+					// DNI
+					const dniCell = row.insertCell();
+					dniInput = document.createElement("input");
+					dniInput.type = "text";
+					dniInput.value = user.dni;
+					dniCell.appendChild(dniInput);
+
+					// Correo
+					const correoCell = row.insertCell();
+					correoInput = document.createElement("input");
+					correoInput.type = "email";
+					correoInput.value = user.correo;
+					correoCell.appendChild(correoInput);
+
+					// Apellido Paterno
+					const apellidoPaternoCell = row.insertCell();
+					apellidoPaternoInput = document.createElement("input");
+					apellidoPaternoInput.type = "text";
+					apellidoPaternoInput.value = user.apellidoPaterno;
+					apellidoPaternoCell.appendChild(apellidoPaternoInput);
+
+					// Apellido Materno
+					const apellidoMaternoCell = row.insertCell();
+					apellidoMaternoInput = document.createElement("input");
+					apellidoMaternoInput.type = "text";
+					apellidoMaternoInput.value = user.apellidoMaterno;
+					apellidoMaternoCell.appendChild(apellidoMaternoInput);
+
+					// Fecha de Nacimiento
+					const fechaNacimientoCell = row.insertCell();
+					fechaNacimientoInput = document.createElement("input");
+					fechaNacimientoInput.type = "date";
+					fechaNacimientoInput.value = user.fechaNacimiento.toString();
+					fechaNacimientoCell.appendChild(fechaNacimientoInput);
+
+					// Teléfono
+					const telefonoCell = row.insertCell();
+					telefonoInput = document.createElement("input");
+					telefonoInput.type = "text";
+					telefonoInput.value = user.telefono;
+					telefonoCell.appendChild(telefonoInput);
+
+					// Acciones
+					const actionsCell = row.insertCell();
+
+					// Botón de Editar
+					editButton = document.createElement("button");
+					editButton.classList.add("edit-button");
+					editButton.textContent = "Editar";
+					editButton.disabled = true;
+					actionsCell.appendChild(editButton);
+
+					// Habilitar botón de Editar al modificar un input
+					const enableEditButton = () => {
+						editButton.disabled = false;
+					};
+					nombresInput.addEventListener("input", enableEditButton);
+					dniInput.addEventListener("input", enableEditButton);
+					correoInput.addEventListener("input", enableEditButton);
+					apellidoPaternoInput.addEventListener("input", enableEditButton);
+					apellidoMaternoInput.addEventListener("input", enableEditButton);
+					fechaNacimientoInput.addEventListener("input", enableEditButton);
+					telefonoInput.addEventListener("input", enableEditButton);
+
+					// Lógica para el botón de Editar
+					editButton.addEventListener("click", async () => {
+						try {
+							const token = authManager.getTokenFromLocalStorage();
+							if (token) {
+								const updatedUser: Alumno = {
+									id: user.id,
+									dni: dniInput.value,
+									nombres: nombresInput.value,
+									apellidoPaterno: apellidoPaternoInput.value,
+									apellidoMaterno: apellidoMaternoInput.value,
+									correo: correoInput.value,
+									fechaNacimiento: fechaNacimientoInput.value,
+									telefono: telefonoInput.value
+								};
+								await studentManager.updateStudent(token, updatedUser);
+								loadUsers(); // Recargar la tabla
+							} else {
+								throw new Error("No se encontró ningún token.");
+							}
+						} catch (error) {
+							console.error("Error al editar alumno:", error);
+							// Mostrar un mensaje de error al usuario
+						}
+					});
+
+					// Botón de Eliminar
+					const deleteButton = document.createElement("button");
+					deleteButton.classList.add("delete-button");
+					deleteButton.textContent = "Eliminar";
+					deleteButton.addEventListener("click", async () => {
+						try {
+							const token = authManager.getTokenFromLocalStorage();
+							if (token) {
+								await studentManager.deleteStudent(token, user.id);
+								row.remove();
+							} else {
+								throw new Error("No se encontró ningún token.");
+							}
+						} catch (error) {
+							console.error("Error al eliminar alumno:", error);
+							// Mostrar un mensaje de error al usuario
+						}
+					});
+					actionsCell.appendChild(deleteButton);
+				}
+			} catch (error) {
+				console.error("Error al cargar alumnos:", error);
+				userTableBody.innerHTML = `<tr><td>Error al cargar alumnos: ${error.message}</td></tr>`;
+			}
+		}
+
+		loadUsersButton.addEventListener("click", loadUsers);
+		authManager.checkAuthenticationAndReplaceContent(userContent);
+	</script>
+</Layout>

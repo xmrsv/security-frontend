@@ -1,0 +1,147 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<style lang="scss">
+    form {
+        max-width: 40ch;
+        display: flex;
+        flex-direction: column;
+
+        label   {
+            margin-block-end: 0.5rem;
+        }
+
+        input {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: 0.1rem solid hsl(0, 0%, 50%);
+            font: inherit;
+            margin-block-end: 1rem;
+        }
+
+        button {
+					margin-top: 1rem;
+					width: 100%;
+					border: none;
+					background-color: hsl(211, 91%, 39%);
+					color: hsl(0, 0%, 100%);
+					font-family: inherit;
+					font-size: inherit;
+					font-weight: 600;
+					padding: 1rem;
+					border-radius: 2rem;
+				}
+}
+</style>
+
+<Layout title="Crear Alumno" description="Crear un nuevo alumno">
+	<div class="main-container" id="userContent">
+		<h1>Crear Alumno</h1>
+		<form class="create-student-form" id="createStudentForm">
+			<label for="createNombres">Nombres:</label>
+			<input type="text" id="createNombres" required />
+			<label for="createDni">DNI:</label>
+			<input type="text" id="createDni" required />
+			<label for="createCorreo">Correo:</label>
+			<input type="email" id="createCorreo" required />
+			<label for="createApellidoPaterno">Apellido Paterno:</label>
+			<input type="text" id="createApellidoPaterno" required />
+			<label for="createApellidoMaterno">Apellido Materno:</label>
+			<input type="text" id="createApellidoMaterno" required />
+			<label for="createFechaNacimiento">Fecha de Nacimiento:</label>
+			<input type="date" id="createFechaNacimiento" required />
+			<label for="createTelefono">Teléfono:</label>
+			<input type="text" id="createTelefono" required />
+			<button id="createStudentButton">Crear Alumno</button>
+		</form>
+	</div>
+
+	<script>
+		import AuthManager from "../../scripts/AuthManager.ts";
+		import StudentManager from "../../scripts/StudentManager.ts";
+
+		const userContent = document.getElementById("userContent");
+		const createStudentForm = document.getElementById(
+			"createStudentForm"
+		) as HTMLFormElement;
+		const createNombresInput = document.getElementById(
+			"createNombres"
+		) as HTMLInputElement;
+		const createDniInput = document.getElementById(
+			"createDni"
+		) as HTMLInputElement;
+		const createCorreoInput = document.getElementById(
+			"createCorreo"
+		) as HTMLInputElement;
+		const createApellidoPaternoInput = document.getElementById(
+			"createApellidoPaterno"
+		) as HTMLInputElement;
+		const createApellidoMaternoInput = document.getElementById(
+			"createApellidoMaterno"
+		) as HTMLInputElement;
+		const createFechaNacimientoInput = document.getElementById(
+			"createFechaNacimiento"
+		) as HTMLInputElement;
+		const createTelefonoInput = document.getElementById(
+			"createTelefono"
+		) as HTMLInputElement;
+		const authManager = new AuthManager();
+		const studentManager = new StudentManager();
+
+		interface Alumno {
+			id: number;
+			dni: string;
+			nombres: string;
+			apellidoPaterno: string;
+			apellidoMaterno: string;
+			correo: string;
+			fechaNacimiento: string;
+			telefono: string;
+		}
+
+		async function createStudent(event: Event) {
+			event.preventDefault(); // Evitar que el formulario se envíe de forma predeterminada
+
+			try {
+				const token = authManager.getTokenFromLocalStorage();
+
+				if (!token) {
+					throw new Error(
+						"No se encontró ningún token. Inicia sesión para continuar."
+					);
+				}
+
+				const newStudent: Alumno = {
+					id: 0, // El ID se asignará en el servidor
+					dni: createDniInput.value,
+					nombres: createNombresInput.value,
+					apellidoPaterno: createApellidoPaternoInput.value,
+					apellidoMaterno: createApellidoMaternoInput.value,
+					correo: createCorreoInput.value,
+					fechaNacimiento: createFechaNacimientoInput.value,
+					telefono: createTelefonoInput.value,
+				};
+
+				await studentManager.createStudent(token, newStudent);
+
+				// Limpiar los campos del formulario
+				createStudentForm.reset();
+
+				// Mostrar un mensaje de éxito al usuario
+				alert("Alumno creado correctamente.");
+
+				// Redirigir a la lista de alumnos
+				window.location.href = "/alumnos/obtener";
+			} catch (error) {
+				console.error("Error al crear alumno:", error);
+				// Mostrar un mensaje de error al usuario
+				alert("Error al crear alumno. Por favor, inténtalo de nuevo.");
+			}
+		}
+
+		createStudentForm.addEventListener("submit", createStudent);
+
+		authManager.checkAuthenticationAndReplaceContent(userContent);
+	</script>
+</Layout>

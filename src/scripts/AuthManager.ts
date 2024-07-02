@@ -1,46 +1,77 @@
-// src/utils/AuthManager.js
 class AuthManager {
-	constructor() {
-		this.API_URL = "http://localhost:8053/"; // Reemplaza con la URL de tu API
+	API_URL: string;
+
+	constructor(apiUrl = "http://localhost:8053/") {
+		this.API_URL = apiUrl;
 	}
 
-	getTokenFromLocalStorage() {
+	getTokenFromLocalStorage(): string | null {
 		const token = localStorage.getItem("token");
 		console.log("AuthManager: Obteniendo token del localStorage:", token);
 		return token;
 	}
 
-	decodeToken(token) {
-		if (!token) {
-			throw new Error("AuthManager: No se proporcionó ningún token.");
+	async decodeToken(token: string): Promise<any | null> {
+		try {
+			if (!token) {
+				throw new Error("AuthManager: No se proporcionó ningún token.");
+			}
+
+			console.log("AuthManager: Decodificando token:", token);
+			const parts = token.split(".");
+			if (parts.length !== 3) {
+				throw new Error("AuthManager: Token inválido");
+			}
+
+			const payload = JSON.parse(atob(parts[1]));
+			console.log("AuthManager: Carga útil del token decodificada:", payload);
+
+			if (!payload.sub) {
+				throw new Error(
+					'AuthManager: El token no contiene un "sub" (subject).'
+				);
+			}
+
+			return payload;
+		} catch (error) {
+			console.error("AuthManager: Error al decodificar el token:", error);
+			return null;
 		}
-
-		console.log("AuthManager: Decodificando token:", token);
-		const parts = token.split(".");
-		if (parts.length !== 3) {
-			throw new Error("AuthManager: Token inválido");
-		}
-
-		const payload = JSON.parse(atob(parts[1]));
-		console.log("AuthManager: Carga útil del token decodificada:", payload);
-
-		if (!payload.sub) {
-			throw new Error('AuthManager: El token no contiene un "sub" (subject).');
-		}
-
-		console.log("AuthManager: Subject del token:", payload.sub);
-
-		// Obtener los roles del usuario
-		const roles = payload.roles || []; // Si no hay roles, se devuelve un array vacío
-		console.log("AuthManager: Roles del usuario:", roles);
-
-		return {
-			sub: payload.sub,
-			roles: roles,
-		};
 	}
 
-	async getTokenFromUsernamePassword(_username, _password) {
+	getUserRole(decodedToken: any): string | null {
+		if (!decodedToken || !decodedToken.role) {
+			return null;
+		}
+
+		const role = decodedToken.role[0].authority;
+		console.log("AuthManager: Rol del usuario:", role);
+		return role;
+	}
+
+	redirectToRolePage(role: string) {
+		switch (role) {
+			case "ADMIN":
+				window.location.href = "/admin";
+				break;
+			case "USER":
+				window.location.href = "/user";
+				break;
+			default:
+				window.location.href = "/";
+				break;
+		}
+	}
+
+	logout() {
+		localStorage.removeItem("token");
+		location.reload();
+	}
+
+	async getTokenFromUsernamePassword(
+		_username: string,
+		_password: string
+	): Promise<any> {
 		console.log(
 			"AuthManager: Iniciando función getTokenFromUsernamePassword..."
 		);
@@ -76,12 +107,12 @@ class AuthManager {
 		}
 	}
 
-	saveTokenInLocalStorage(token) {
+	saveTokenInLocalStorage(token: string) {
 		console.log("AuthManager: Guardando el token en localStorage:", token);
 		localStorage.setItem("token", token);
 	}
 
-	async registerUser(_username, _password) {
+	async registerUser(_username: string, _password: string): Promise<any> {
 		console.log("AuthManager: Iniciando función registerUser...");
 		console.log("AuthManager: URL de la API:", this.API_URL + "auth/register");
 		console.log("AuthManager: Usuario:", _username);
@@ -115,7 +146,7 @@ class AuthManager {
 		}
 	}
 
-	async getUsersWithToken(token) {
+	async getUsersWithToken(token: string): Promise<any> {
 		try {
 			console.log("AuthManager: Iniciando función getUsersWithToken...");
 			console.log("AuthManager: URL de la API:", this.API_URL + "api/alumnos");
@@ -151,7 +182,7 @@ class AuthManager {
 		}
 	}
 
-	checkAuthentication() {
+	checkAuthentication(): boolean {
 		const token = this.getTokenFromLocalStorage();
 
 		if (token) {
@@ -163,7 +194,7 @@ class AuthManager {
 		}
 	}
 
-	checkExistingToken() {
+	checkExistingToken(): boolean {
 		const token = this.getTokenFromLocalStorage();
 		console.log("AuthManager: Token encontrado en localStorage:", token);
 
@@ -177,6 +208,13 @@ class AuthManager {
 				"AuthManager: No se encontró ninguna sesión iniciada. Mostrando el formulario."
 			);
 			return false;
+		}
+	}
+
+	checkAuthenticationAndReplaceContent(element: HTMLElement) {
+		if (!this.checkAuthentication()) {
+			element.innerHTML =
+				"<p>Necesitas autenticarte para acceder a esta página.</p>";
 		}
 	}
 }

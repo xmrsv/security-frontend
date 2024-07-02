@@ -1,6 +1,5 @@
 ---
 // src/components/Header.astro
-
 ---
 
 <style lang="scss">
@@ -28,6 +27,16 @@
 
 				gap: 1rem;
 			}
+
+			.nav-links {
+				display: flex;
+				gap: 1rem;
+			}
+
+			.account-links {
+				display: flex;
+				gap: 1rem;
+			}
 		}
 	}
 
@@ -39,6 +48,12 @@
 	.logout-button {
 		cursor: pointer;
 	}
+
+	.divider {
+		height: 20px;
+		width: 1px;
+		background-color: hsl(0, 0%, 95%);
+	}
 </style>
 
 <header>
@@ -46,55 +61,70 @@
 		<a class="logo" href="/">Academia</a>
 		<ul>
 			<li>
-				<a href="#">Inicio</a>
+				<a href="/">Inicio</a>
 			</li>
 			<li>
 				<a href="/alumnos">Alumnos</a>
 			</li>
-			<li>
+			<li class="nav-links">
+				<a href="/cursos">Cursos</a>
+			</li>
+			<li class="nav-links">
+				<a href="/profesores">Profesores</a>
+			</li>
+			<li class="divider"></li>
+			<li id="login-link" class="account-links">
 				<a href="/auth/login">Iniciar sesión</a>
 			</li>
-			<li>
+			<li id="register-link" class="account-links">
 				<a href="/auth/register">Registrarte</a>
 			</li>
-			<li>
+			<li id="logout-link" class="account-links">
 				<span class="logout-button" id="logout-button">Cerrar sesión</span>
+			</li>
+			<li id="username-display" class="account-links">
+				<!-- El nombre de usuario se mostrará aquí -->
 			</li>
 		</ul>
 	</nav>
 </header>
 
 <script>
+	import AuthManager from "../scripts/AuthManager.ts";
+
+	const authManager = new AuthManager();
 	const logoutButton = document.getElementById("logout-button");
+	const loginLink = document.getElementById("login-link");
+	const registerLink = document.getElementById("register-link");
+	const logoutLink = document.getElementById("logout-link");
+	const usernameDisplay = document.getElementById("username-display");
 
 	logoutButton.addEventListener("click", () => {
-		localStorage.removeItem("token");
+		authManager.logout();
 	});
 
-	const token = localStorage.getItem("token");
-	try {
-		const username = decodeToken(token);
-		console.log("Nombre de usuario:", username);
-	} catch (error) {
-		console.error("Error al decodificar el token:", error);
-	}
-
-	function decodeToken(token) {
-		if (!token) {
-			throw new Error("No se proporcionó ningún token.");
-		}
-
-		const parts = token.split(".");
-		if (parts.length !== 3) {
-			throw new Error("Token inválido");
-		}
-
-		const payload = JSON.parse(atob(parts[1]));
-
-		if (!payload.sub) {
-			throw new Error('El token no contiene un "sub" (subject).');
-		}
-
-		return payload.sub;
+	const token = authManager.getTokenFromLocalStorage();
+	if (token) {
+		authManager
+			.decodeToken(token)
+			.then((decodedToken) => {
+				if (decodedToken) {
+					console.log("Nombre de usuario:", decodedToken.sub);
+					loginLink.style.display = "none";
+					registerLink.style.display = "none";
+					logoutLink.style.display = "block"; // Mostrar el enlace de cierre de sesión
+					usernameDisplay.innerHTML = `Hola, ${decodedToken.sub}!`; // Mostrar el nombre de usuario
+					usernameDisplay.style.display = "block"; // Mostrar el elemento del nombre de usuario
+				} else {
+					console.warn("AuthManager: No se pudo decodificar el token.");
+				}
+			})
+			.catch((error) => {
+				console.error("AuthManager: Error al decodificar el token:", error);
+			});
+	} else {
+		// Si no hay token, ocultar el enlace de cierre de sesión y el nombre de usuario
+		logoutLink.style.display = "none";
+		usernameDisplay.style.display = "none";
 	}
 </script>

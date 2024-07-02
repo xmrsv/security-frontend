@@ -3,7 +3,7 @@
 
 import Fonts from "../components/Fonts.astro";
 import Header from "../components/Header.astro";
-import "../styles/styles.css";
+import "../styles/styles.scss";
 
 interface Props {
 	title: string;
@@ -18,6 +18,10 @@ const { title, description } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<!-- SVG Favicon -->
+		 <link rel="shortcut icon" href="/favicon.svg" type="image/x-icon">
+		 
 		
 		<Fonts />
 		

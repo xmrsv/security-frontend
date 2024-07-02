@@ -10,6 +10,14 @@ import Layout from "../../layouts/Layout.astro";
 		height: 100%;
 		grid-template-columns: 3fr 2fr;
 
+		@media screen and (max-width:800px) {
+			display: block;
+			
+			.image-container {
+				display: none;
+			}
+		}
+
 		.image-container {
 			background-image: url("/loginbg.jpg");
 			background-position: center;
@@ -25,11 +33,10 @@ import Layout from "../../layouts/Layout.astro";
 			background-color: hsl(0, 0%, 100%);
 
 			form {
-				width: 100%;
 				max-width: 50ch;
 				display: flex;
 				flex-direction: column;
-				align-items: center;
+				align-items: left;
 				padding: 4rem;
 
 				h1 {
@@ -117,7 +124,7 @@ import Layout from "../../layouts/Layout.astro";
 </Layout>
 
 <script>
-	import AuthManager from "../../scripts/AuthManager.js";
+	import AuthManager from "../../scripts/AuthManager";
 
 	const button = document.getElementById("button");
 	const username = document.getElementById("username") as HTMLInputElement;

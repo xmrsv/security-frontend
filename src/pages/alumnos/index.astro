@@ -1,0 +1,19 @@
+---
+// src/pages/alumnos/index.astro
+
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Alumnos" description="Gestionar alumnos">
+	<div class="main-container" id="userContent">
+		<a href="/alumnos/obtener">Listar alumnos</a>
+		<script>
+			import AuthManager from "../../scripts/AuthManager.ts";
+
+			const userContent = document.getElementById("userContent");
+			const authManager = new AuthManager();
+
+			authManager.checkAuthenticationAndReplaceContent(userContent);
+		</script>
+	</div>
+</Layout>

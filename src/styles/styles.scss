@@ -26,10 +26,17 @@ main {
 }
 
 .general-table {
+	border-radius: 1rem;
 	border-collapse: collapse;
 	overflow-x: visible;
 	width: 100%;
-	background-color: hsla(0, 0%, 0%, 5%);
+
+	th {
+		text-align: left;
+		background-color: hsla(0, 0%, 0%, 10%);
+		font-weight: 600;
+		padding: 1rem;
+	}
 
 	tbody {
 		tr {
@@ -37,61 +44,73 @@ main {
 				background-color: hsla(0, 0%, 0%, 5%);
 			}
 		}
+
 		td {
 			padding: 1rem;
-
-			input {
-				padding: 0.5rem;
-				border-radius: 0.5rem;
-				border: 0.1rem solid hsl(0, 0%, 50%);
-				font: inherit;
-			}
 		}
 	}
 }
 
-/* Estilos específicos para la tabla de alumnos */
-.alumnos-table .edit-button,
-.alumnos-table .delete-button {
-	padding: 0.5rem 1rem;
-	border-radius: 0.5rem;
-	border: none;
-	font: inherit;
-	margin-right: 0.5rem;
-	color: hsl(0, 0%, 100%);
-	font-weight: 600;
-}
-
-.alumnos-table .edit-button {
-	background-color: hsl(145, 58%, 55%);
-}
-
-.alumnos-table .delete-button {
-	background-color: hsl(348, 100%, 61%);
-}
-
-.alumnos-table .editable-cell {
-	display: flex;
-	align-items: center;
-}
-
-.alumnos-table .editable-cell input {
-	border: none;
-	background: transparent;
-	font: inherit;
-	margin-left: 0.5rem;
-	width: 100%;
-}
-
-.alumnos-table .editable-cell input:focus {
-	outline: none;
-}
-
-.alumnos-table .edit-button[disabled] {
-	opacity: 0.5;
-	cursor: not-allowed;
+.alumnos-table {
+	.edit-button[disabled] {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
 }
 
 .overflow-fixer-x {
 	overflow-x: auto;
+}
+
+label {
+	margin-block-end: 0.5rem;
+}
+
+input {
+	padding: 0.75rem;
+	border-radius: 0.5rem;
+	border: 0.1rem solid hsl(0, 0%, 70%);
+	font: inherit;
+	font-family: monospace;
+	outline: none;
+	margin-block-end: 1rem;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+	&:focus-visible {
+		box-shadow: 0 0.25rem 0.25rem hsla(0, 0%, 0%, 10%);
+		border-color: hsl(0, 0%, 0%);
+	}
+}
+
+table input {
+	margin-block-end: 0;
+}
+
+button, .ui-button {
+	text-decoration: none;
+	padding: 1rem 1.5rem;
+	border-radius: 2rem;
+	border: none;
+	font: inherit;
+	color: hsl(0, 0%, 100%);
+	font-weight: 600;
+	cursor: pointer;
+	background-color: hsl(200, 1%, 41%);
+}
+
+.primary-button {
+	background-color: hsl(210, 94%, 34%);
+} 
+
+.delete-button {
+	background-color: rgb(208, 55, 55);
+}
+
+.edit-button {
+	background-color: rgb(162, 102, 5);
+}
+
+.student-actions-container {
+	display: flex;
+	gap: 1rem;
 }

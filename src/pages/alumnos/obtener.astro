@@ -4,27 +4,44 @@
 import Layout from "../../layouts/Layout.astro";
 ---
 
-<style>
-	.load-students-button {
-		padding: 1rem 1.5rem;
-		border-radius: 2rem;
-		border: none;
-		font: inherit;
+<style lang="scss">
+	.button-wrapper {
+		display: flex;
+		width: fit-content;
+		gap: 1rem;
 		margin-block-end: 1rem;
-		color: hsl(0, 0%, 0%);
-		background-color: hsl(211, 91%, 39%);
-		color: hsl(0, 0%, 100%);
-		font-weight: 600;
+
+		.load-students-button,
+		.create-student-button {
+			text-decoration: none;
+			padding: 1rem 1.5rem;
+			border-radius: 2rem;
+			border: none;
+			font: inherit;
+			color: hsl(0, 0%, 100%);
+			font-weight: 600;
+			cursor: pointer;
+		}
+
+		.load-students-button {
+			background-color: hsl(204, 3%, 36%);
+		}
+
+		.create-student-button {
+			background-color: hsl(211, 91%, 39%);
+		}
 	}
 </style>
 
 <Layout title="Lista de alumnos" description="Lista de alumnos">
 	<div class="main-container" id="userContent">
 		<h1>Alumnos</h1>
-		<button class="load-students-button" id="loadUsersButton"
-			>Cargar alumnos</button
-		>
-		<a href="/alumnos/crear">Crear Alumno</a>
+		<div class="button-wrapper">
+			<button class="load-students-button" id="loadUsersButton"
+				>Actualizar</button
+			>
+			<a class="ui-button primary-button" href="/alumnos/crear">Crear</a>
+		</div>
 
 		<div class="overflow-fixer-x">
 			<table class="general-table alumnos-table" id="userList">
@@ -52,12 +69,15 @@ import Layout from "../../layouts/Layout.astro";
 		import AuthManager from "../../scripts/AuthManager.ts";
 		import StudentManager from "../../scripts/StudentManager.ts";
 
+		// Verify user before everything!
+		const authManager = new AuthManager();
 		const userContent = document.getElementById("userContent");
+		authManager.checkAuthenticationAndReplaceContent(userContent);
+
 		const userTableBody = document.getElementById(
 			"userTableBody"
 		) as HTMLTableSectionElement;
 		const loadUsersButton = document.getElementById("loadUsersButton");
-		const authManager = new AuthManager();
 		const studentManager = new StudentManager();
 
 		interface Alumno {
@@ -160,12 +180,17 @@ import Layout from "../../layouts/Layout.astro";
 					// Acciones
 					const actionsCell = row.insertCell();
 
+					// Contenedor para los botones
+					const studentActionsContainer = document.createElement("div");
+					studentActionsContainer.classList.add("student-actions-container");
+					actionsCell.appendChild(studentActionsContainer);
+
 					// Botón de Editar
 					editButton = document.createElement("button");
 					editButton.classList.add("edit-button");
 					editButton.textContent = "Editar";
 					editButton.disabled = true;
-					actionsCell.appendChild(editButton);
+					studentActionsContainer.appendChild(editButton);
 
 					// Habilitar botón de Editar al modificar un input
 					const enableEditButton = () => {
@@ -192,7 +217,7 @@ import Layout from "../../layouts/Layout.astro";
 									apellidoMaterno: apellidoMaternoInput.value,
 									correo: correoInput.value,
 									fechaNacimiento: fechaNacimientoInput.value,
-									telefono: telefonoInput.value
+									telefono: telefonoInput.value,
 								};
 								await studentManager.updateStudent(token, updatedUser);
 								loadUsers(); // Recargar la tabla
@@ -223,7 +248,7 @@ import Layout from "../../layouts/Layout.astro";
 							// Mostrar un mensaje de error al usuario
 						}
 					});
-					actionsCell.appendChild(deleteButton);
+					studentActionsContainer.appendChild(deleteButton);
 				}
 			} catch (error) {
 				console.error("Error al cargar alumnos:", error);
@@ -231,7 +256,7 @@ import Layout from "../../layouts/Layout.astro";
 			}
 		}
 
+		loadUsers();
 		loadUsersButton.addEventListener("click", loadUsers);
-		authManager.checkAuthenticationAndReplaceContent(userContent);
 	</script>
 </Layout>

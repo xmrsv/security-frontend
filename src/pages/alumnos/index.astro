@@ -4,9 +4,60 @@
 import Layout from "../../layouts/Layout.astro";
 ---
 
+<style lang="scss">
+	ul {
+        padding: 0;
+		list-style: none;
+		li {
+            max-width: 30ch;
+			margin-block-end: 1rem;
+			a {
+                border-radius: 0.5rem;
+                border: 0.1rem solid hsl(0, 0%, 50%);
+				display: block;
+				background-color: hsl(0, 0%, 90%);
+				padding: 1.5rem;
+				text-decoration: none;
+				color: inherit;
+
+                &:hover {
+                    box-shadow: 0 0.25rem 0.2rem hsla(0, 0%, 0%, 10%);
+                }
+
+				h2 {
+                    font-weight: 600;
+					margin-top: 0;
+                    margin-bottom: 0.5rem;
+					font-size: 1.2rem;
+                }
+
+				p {
+                    margin-top: 0;
+					margin-bottom: 0;
+				}
+			}
+		}
+	}
+</style>
+
 <Layout title="Alumnos" description="Gestionar alumnos">
 	<div class="main-container" id="userContent">
-		<a href="/alumnos/obtener">Listar alumnos</a>
+		<ul>
+			<li>
+				<a href="/alumnos/obtener">
+					<h2>Tabla de alumnos</h2>
+
+					<p>Ver, editar y eliminar alumnos</p>
+				</a>
+			</li>
+			<li>
+				<a href="/alumnos/crear"
+					><h2>Crear un alumno</h2>
+					<p>Crear un alumno nuevo</p></a
+				>
+			</li>
+		</ul>
+
 		<script>
 			import AuthManager from "../../scripts/AuthManager.ts";
 

@@ -13,40 +13,46 @@ class StudentManager {
 	 * @throws {Error} Si ocurre un error durante la solicitud fetch o si la solicitud no es exitosa.
 	 */
 	async getStudents(token: string): Promise<Alumno[]> {
-		try {
-			console.log("StudentManager: Iniciando función getStudents...");
-			console.log("StudentManager: URL de la API:", this.API_URL + "api/alumnos");
-			console.log("StudentManager: Token:", token);
-
-			const response = await fetch(this.API_URL + "api/alumnos", {
-				method: "GET",
-				headers: {
-					Authorization: "Bearer " + token,
-					"Content-Type": "application/json",
-				},
-			});
-
-			console.log(
-				"StudentManager: Código de estado de la respuesta:",
-				response.status
-			);
-			console.log("StudentManager: Respuesta del servidor (cruda):", response);
-
-			if (!response.ok) {
-				throw new Error(
-					`StudentManager: Error en la solicitud: ${response.status}`
-				);
-			}
-
-			const data = await response.json();
-			console.log("StudentManager: Respuesta del servidor (JSON):", data);
-
-			return data;
-		} catch (error) {
-			console.error("StudentManager: Error al obtener estudiantes:", error);
-			throw error;
-		}
-	}
+        try {
+          console.log("StudentManager: Iniciando función getStudents...");
+          console.log("StudentManager: URL de la API:", this.API_URL + "api/alumnos");
+          console.log("StudentManager: Token:", token);
+      
+          const response = await fetch(this.API_URL + "api/alumnos", {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + token,
+              "Content-Type": "application/json",
+            },
+          });
+      
+          console.log(
+            "StudentManager: Código de estado de la respuesta:",
+            response.status
+          );
+          console.log("StudentManager: Respuesta del servidor (cruda):", response);
+      
+          if (response.status === 204) {
+            // No hay contenido, devolver un array vacío
+            console.log("StudentManager: No hay alumnos disponibles.");
+            return [];
+          }
+      
+          if (!response.ok) {
+            throw new Error(
+              `StudentManager: Error en la solicitud: ${response.status}`
+            );
+          }
+      
+          const data = await response.json();
+          console.log("StudentManager: Respuesta del servidor (JSON):", data);
+      
+          return data;
+        } catch (error) {
+          console.error("StudentManager: Error al obtener estudiantes:", error);
+          throw error;
+        }
+      }
 
 	/**
 	 * Crea un nuevo estudiante.

@@ -149,9 +149,7 @@ import Layout from "../../layouts/Layout.astro";
 		}
 	});
 
-	// Verificar el token al cargar la página
 	if (authManager.checkExistingToken()) {
-		// Si ya existe un token, redirige o muestra un mensaje
 		registerForm.innerHTML =
 			"<p>Ya has iniciado sesión. No puedes registrar una nueva cuenta.</p>";
 	}
